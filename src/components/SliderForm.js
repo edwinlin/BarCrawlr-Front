@@ -1,6 +1,5 @@
 import React from "react";
 import { NavLink, Link, withRouter } from "react-router-dom";
-import SignedOutLinks from './SignedOutLinks'
 import Login from './Login'
 import Signup from './Signup'
 

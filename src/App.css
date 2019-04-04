@@ -4,10 +4,14 @@
   text-align: center;
 }
 
-/* .navbar {
-  display:flex;
+#mapview {
+  background-color: red;
+  height:100%;
 }
- */
+#navbar {
+  height:100%;
+}
+
 
  .nav-wrapper{
    width:100%;

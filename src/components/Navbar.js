@@ -5,7 +5,7 @@ import SignedInLinks from './SignedInLinks'
 const Navbar = props => {
   return (
     <nav className="nav-wrapper grey darken-3">
-        <SignedInLinks handleCreateOrganization={props.handleCreateOrganization}/>
+        <SignedInLinks clearState={props.clearState} handleCreateOrganization={props.handleCreateOrganization}/>
     </nav>
   );
 };

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
-import {usersGetFetch} from '../redux/actions';
 import Navbar from './Navbar'
+import MapContainer from './MapContainer'
 
 class User extends Component {
   handleCreateOrganization=()=>{
@@ -23,7 +23,8 @@ class User extends Component {
   render(){
     return(
       <div id="navbar">
-        <Navbar handleCreateOrganization={this.handleCreateOrganization}/>
+        <Navbar clearState={this.props.clearState} handleCreateOrganization={this.handleCreateOrganization}/>
+        <MapContainer />
       </div>
     )
   }
