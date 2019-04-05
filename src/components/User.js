@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
 import Navbar from './Navbar'
-import MapContainer from './MapContainer'
+import GoogleMapsContainer from './GoogleMapsContainer'
 
 class User extends Component {
   handleCreateOrganization=()=>{
@@ -24,7 +24,7 @@ class User extends Component {
     return(
       <div id="navbar">
         <Navbar clearState={this.props.clearState} handleCreateOrganization={this.handleCreateOrganization}/>
-        <MapContainer />
+        <GoogleMapsContainer />
       </div>
     )
   }
