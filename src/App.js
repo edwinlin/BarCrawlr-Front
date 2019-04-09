@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
 import { Route, Switch, withRouter } from "react-router-dom";
+
+import {connect} from 'react-redux' //need for redux
+
 import Navbar from './components/Navbar'
 import './App.css';
 // import Container from './components/Container'
@@ -29,7 +32,7 @@ componentDidMount = () => {
         .then(resp => resp.json())
         .then(user => {
           this.setState(user, () => {
-            console.log(user.message);
+            // console.log(user.message);
             console.log(this.state.user)
             if(this.state.user.id > 1){
               this.props.history.push("/authorized");
@@ -92,7 +95,7 @@ loginSubmitHandler = userInfo => {
         ((localStorage.token) && (localStorage.token !== "undefined")) ? fetch('http://localhost:3000/api/v1/current_user', {method: "GET", headers:{'content-type': 'application/json', 'accepts': 'application/json', 'Authorization': `Bearer ${localStorage.token}`}}).then(resp=>resp.json())
         .then(json=>{
           console.log("state user", this.state);
-          this.state.user.id > 1 ? this.props.history.push("/authorized") : this.props.history.push("/") }) : this.props.history.push("/")
+          this.state.user.id >= 1 ? this.props.history.push("/authorized") : this.props.history.push("/") }) : this.props.history.push("/")
       });
     });
 };
@@ -115,4 +118,4 @@ loginSubmitHandler = userInfo => {
   }
 }
 
-export default withRouter(App);
+export default connect()(withRouter(App));

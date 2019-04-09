@@ -4,23 +4,30 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-// import {createStore, applyMiddleware} from 'redux';
-// import {Provider} from 'react-redux';
+import {createStore, applyMiddleware} from 'redux';
+import {Provider} from 'react-redux';
 // import reducer from './redux/reducer';
 import {BrowserRouter} from 'react-router-dom';
 // import { composeWithDevTools } from 'redux-devtools-extension';
-// import thunk from 'redux-thunk';
+import thunk from 'redux-thunk';
+import reducer from './reducer/reducer'
 
 // const store = createStore(reducer, composeWithDevTools(
 //   applyMiddleware(thunk)
 // ))
 
+const store = createStore(reducer, applyMiddleware(thunk))
+//reducer deals with state
+//middleware thunk is the actions
+
+//npm install react-redux
+
 ReactDOM.render(
-  // <Provider store={store}>
+  <Provider store={store}>
     <BrowserRouter>
       <App />
     </BrowserRouter>
-  // </Provider>
+  </Provider>
 , document.getElementById('root'));
 
 

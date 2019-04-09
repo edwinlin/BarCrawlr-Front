@@ -1,4 +1,27 @@
 /* BOOTSTRAP IS ACTIVE BTW!*/
+#mapid {
+  height:100%;
+  width:100%;
+  position: relative;
+}
+#main-container {
+  height:100vh;
+  display:block;
+  position: relative;
+}
+#navbar {
+  height:10%;
+  display:block;
+}
+#map-component {
+  height:40vh;
+  position:relative;
+}
+#bars-list-component {
+  max-height:50vh;
+  width:50%;
+  overflow: scroll;
+}
 
 .App {
   text-align: center;
@@ -8,10 +31,6 @@
   background-color: red;
   height:100%;
 }
-#navbar {
-  height:100%;
-}
-
 
  .nav-wrapper{
    width:100%;
