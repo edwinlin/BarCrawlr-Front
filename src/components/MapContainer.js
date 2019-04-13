@@ -2,6 +2,9 @@ import React from 'react';
 import L from 'leaflet';
 let mymap = null;
 let marker = null;
+let flag = 0;
+const markerArray = [];
+let markerGroup;
 
 class MapContainer extends React.Component {
   state = {
@@ -9,15 +12,39 @@ class MapContainer extends React.Component {
     changed:0
   }
 
+  removeMarkers=()=>{
+    this.props.bars.forEach(bar=>
+      mymap.removeLayer(markerGroup)
+    )
+  }
+
+  addMarkers=()=>{
+    console.log("hello", this.props.bars)
+    markerGroup = L.layerGroup().addTo(mymap);
+
+    this.props.bars.forEach(
+      bar=>{
+        const firefoxIcon = L.icon({
+            iconUrl: 'http://pluspng.com/img-png/png-pub-beer-mug-alcohol-pub-drink-bar-glass-ale-720.png',
+            iconSize: [38, 45], // size of the icon
+        });
+        // create marker object, pass custom icon as option, add to map
+        // L.marker([bar.location.lat, bar.location.lng], {icon: firefoxIcon}).addTo(mymap);
+        const marker = L.marker([bar.location.lat, bar.location.lng], {icon: firefoxIcon, title: bar.name, bar_id: bar.id}).bindPopup(bar.name).addTo(markerGroup).on('click', function(e) {
+        // marker.bindPopup(bar.name).openPopup()
+    // console.log(this);
+});
+      })
+  }
+
   componentDidMount=()=> {
-    const watchID = navigator.geolocation.watchPosition((position)=> {
-      console.log(position.coords.latitude, position.coords.longitude);
-        this.setState({location: [position.coords.latitude, position.coords.longitude]})
-    });
+    console.log(this.props)
+    this.props.callFunction(()=>this.removeMarkers())
+    // this.setState({...this.state, location:this.props.location})
     // setTimeout(()=>{console.log("boo",this.state.location)}, 8000);
 
     // create map
-      mymap = L.map('mapid').setView([40.7007099, -73.987246], 15);
+      mymap = L.map('mapid').setView([40.7007099, -73.987246], 13);
       marker = new L.Marker([40.7007099, -73.987246])
       marker.addTo(mymap)
 
@@ -26,36 +53,35 @@ class MapContainer extends React.Component {
     		id: 'mapbox.streets'
     	}).addTo(mymap);
 
-
   }
 
-componentDidUpdate=()=>{
+componentDidUpdate=(prevProps, prevState, snapshot)=>{
 
-  if(this.state.location !== ""){
-    marker.setLatLng(this.state.location);
-    // marker.addTo(mymap)
-    mymap.panTo(this.state.location)
+  if(this.props.data.search !== ""){
+
+    console.log("data props", typeof this.props.data.areaSearchCoord[0])
+
+    if(typeof this.props.data.areaSearchCoord[0] === "number"){
+      this.removeMarkers();
+      this.addMarkers();
+
+      mymap.panTo([this.props.data.areaSearchCoord[0], this.props.data.areaSearchCoord[1]])
+
+    }
+    // marker.setLatLng(this.props.data.areaSearchCoord);
+  //   // marker.addTo(mymap)
   }
   // if(this.state.changed==0){
-  //   this.setState(prevState=>({changed:1}))
-  //   setTimeout(function(){console.log(this.props)},8000)
-  // }
-}
-
-searchClicked=()=>{
-  // this.props.bars.forEach(
-  //   bar=>{
-  //     var firefoxIcon = L.icon({
-  //         iconUrl: 'https://www.pinclipart.com/picdir/big/193-1932955_beer-clip-cartoon-clip-free-download-beer-clipart.png',
-  //         iconSize: [38, 45], // size of the icon
-  //         });
-  //
-  //     // create marker object, pass custom icon as option, add to map
-  //     L.marker([bar.location.lat, bar.location.lng], {icon: firefoxIcon}).addTo(mymap);
-  //   }
-  // )
-  console.log("searched")
-}
+    // this.setState(prevState=>({changed:1}))
+    if(this.props.bars.length>1){
+      flag+=1;
+    }
+    if(flag < 2){
+      console.log('bloob')
+      // this.removeMarkers();
+      this.addMarkers();
+    }
+  }
 
   render() {
     return <div id="mapid"></div>
