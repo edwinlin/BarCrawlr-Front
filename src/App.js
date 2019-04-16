@@ -41,7 +41,7 @@ componentDidMount = () => {
             }
           });
         })
-    : this.props.history.push("/");
+    : this.props.history.push("/authorized");
 
   // token ? document.getElementById("navbar").style.display = "block" : document.getElementById("navbar").style.display = "none"
 };
@@ -72,7 +72,7 @@ signupSubmitHandler = (userInfo) => {
       }else{
         this.setState(userData, () => {
           localStorage.setItem("token", userData.jwt);
-          this.loginSubmitHandler(userInfo)
+          // this.loginSubmitHandler(userInfo)
         });
       }
     });
@@ -109,7 +109,7 @@ loginSubmitHandler = userInfo => {
             exact path="/"
             render={() => <SliderForm loginSubmitHandler={this.loginSubmitHandler} signupSubmitHandler={this.signupSubmitHandler} />}
           />
-          <Route exact path="/authorized" render={()=><User clearState={this.clearState}/>} />
+          <Route exact path="/authorized" render={()=><User clearState={this.clearState} user={this.state.user}/>} />
         </Switch>
 
       </div>

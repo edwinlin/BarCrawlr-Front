@@ -18,7 +18,8 @@ class User extends Component {
     chosenBars:[],
     search:"",
     location:"",
-    areaSearchCoord:""
+    areaSearchCoord:"",
+    event: {}
   }
 
   componentDidMount(){
@@ -29,6 +30,38 @@ class User extends Component {
     fetch(`https://api.foursquare.com/v2/venues/search?categoryId=4bf58dd8d48988d116941735&client_id=GM5FQRETMGHS2BJKGF3PQKUQUVO4UITUFWHAXDIFEM2ITPAY&client_secret=1AIBJBHYVGW4UPHS03GG0XYUII1UANFCHAR3J4DFBKTSVRYE&near=${[40.7007099, -73.987246]}&radius=1000&v=${utc}`)
     .then(resp=>resp.json())
     .then(json=>this.setState({...this.state, bars:json.response.venues}))
+
+    if(!this.props.user.events.length > 0) {
+      fetch('http://localhost:3000/api/v1/events', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.token}`
+        },
+        body: JSON.stringify({event: {name: info.name, user_id: this.props.user.id}})
+      })
+        .then(resp => resp.json())
+        .then(event => {
+          console.log(event)
+          this.setState({
+            event: event
+          })
+        })
+      } else {
+        fetch(`http://localhost:3000/api/v1/users/${this.props.user.id}`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${localStorage.token}`
+          }
+        })
+          .then(resp => resp.json())
+          .then(user => {
+            console.log(user);
+            console.log(user.events)
+            this.setState({
+              event: user.events[-1]
+            })
+          })
+      }
   }
 
   componentDidUpdate(){
@@ -77,8 +110,22 @@ class User extends Component {
 
   handleCardClick=(info)=>{
     // debugger
-    this.setState({chosenBars:[...this.state.chosenBars, info]}, ()=>console.log("User info", info))
-  }
+    this.setState({chosenBars:[...this.state.chosenBars, info]}, ()=>{
+      console.log("User info", info)
+
+          fetch('http://localhost:3000/api/v1/bars', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${localStorage.token}`
+            },
+            body: JSON.stringify({bar: {event_id: this.state.event.id}})
+          })
+            .then(resp => resp.json())
+            .then(bar => {
+              console.log(bar)
+            })
+        })
+    }
 
   handleChosenCardClick=(info)=>{
     // console.log(info.id)
@@ -87,6 +134,7 @@ class User extends Component {
   }
 
   render(){
+    console.log(this.state);
     return(
       <div id="main-container">
         <div id="navbar">

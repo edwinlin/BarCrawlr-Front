@@ -3,7 +3,8 @@ import React from "react";
 class Signup extends React.Component {
   state = {
     username: "",
-    password: ""
+    password: "",
+    password_confirmation: ""
   };
 
   changeHandler = e => {
@@ -18,7 +19,8 @@ class Signup extends React.Component {
     this.props.submitHandler(this.state);
     this.setState({
       username: "",
-      password: ""
+      password: "",
+      password_confirmation: ""
     });
   };
   render() {
@@ -35,6 +37,12 @@ class Signup extends React.Component {
             type="password"
             placeholder="password"
             value={this.state.password}
+            onChange={this.changeHandler}
+          />
+          <input
+            type="password"
+            placeholder="password_confirmation"
+            value={this.state.password_confirmation}
             onChange={this.changeHandler}
           />
           <button>Sign Up</button>
