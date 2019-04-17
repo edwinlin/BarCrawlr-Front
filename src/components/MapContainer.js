@@ -5,6 +5,7 @@ let marker = null;
 let flag = 0;
 const markerArray = [];
 let markerGroup;
+let usersMarkerGroup;
 
 class MapContainer extends React.Component {
   state = {
@@ -19,7 +20,7 @@ class MapContainer extends React.Component {
   }
 
   addMarkers=()=>{
-    console.log("hello", this.props.bars)
+    // console.log("hello", this.props.bars)
     markerGroup = L.layerGroup().addTo(mymap);
 
     this.props.bars.forEach(
@@ -59,7 +60,7 @@ componentDidUpdate=(prevProps, prevState, snapshot)=>{
 
   if(this.props.data.search !== ""){
 
-    console.log("data props", typeof this.props.data.areaSearchCoord[0])
+    // console.log("data props", typeof this.props.data.areaSearchCoord[0])
 
     if(typeof this.props.data.areaSearchCoord[0] === "number"){
       this.removeMarkers();
@@ -77,7 +78,7 @@ componentDidUpdate=(prevProps, prevState, snapshot)=>{
       flag+=1;
     }
     if(flag < 2){
-      console.log('bloob')
+      // console.log('bloob')
       // this.removeMarkers();
       this.addMarkers();
     }

@@ -14,8 +14,17 @@ class BarsListCard extends React.Component {
     return (
       <p onClick={
         ()=>{
-          if( !this.props.data.chosenBars.includes(this.props.bar) ){
-
+          // console.log("BOOYA", this.props.data.chosenBars.map(bar=>{
+          //   if(bar.foursq_id){
+          //     return bar.foursq_id
+          //   }else{
+          //     return bar.id
+          //   }
+          // }))
+          // console.log("kasha", this.props.bar.id)
+          if( this.props.data.chosenBars.map(bar=>bar.foursq_id).includes(this.props.bar.id) ){
+            alert("OOPS")
+          }else{
             this.props.handleCardClick(this.props.bar)
           }
         }}

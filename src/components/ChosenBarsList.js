@@ -5,15 +5,20 @@ import ChosenBarsListCard from './ChosenBarsListCard'
 class ChosenBarsList extends React.Component {
   state = {
     placeholder:"",
+    chosenBars:[]
   }
+
+componentDidMount=()=>{
+
+}
 
 componentDidUpdate=()=>{
   // if(this.props.bars.chosenBars){
   //   this.setState({array: [...this.state.array, this.props.bars.chosenBars]})
   // }
   // console.log("ChosenBarsList", Array.isArray(this.props.data.chosenBars))
-  console.log("ChosenBarsList props", this.props.data.chosenBars)
-
+  // console.log("ChosenBarsList props", this.props.data.chosenBars)
+  console.log("chosen mount bars", this.props.data.chosenBars)
 }
 
   render() {
@@ -24,7 +29,7 @@ componentDidUpdate=()=>{
         </div>
         <div id="chosen-list">
           <ul className="chosen-bars-list">
-          {this.props.data.chosenBars.map(bar=><ChosenBarsListCard handleChosenCardClick={this.props.handleChosenCardClick} bar={bar}/>)}
+          {Array.isArray(this.props.data.chosenBars) ? this.props.data.chosenBars.map(bar=><ChosenBarsListCard handleChosenCardClick={this.props.handleChosenCardClick} bar={bar} data={this.props.data} />) : console.log("nothing")}
 
           </ul>
         </div>

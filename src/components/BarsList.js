@@ -8,7 +8,7 @@ class BarsList extends React.Component {
     placeholder:""
   }
   componentDidUpdate=()=>{
-    console.log("BarsList", this.props.bars)
+    // console.log("BarsList", this.props.bars)
   }
   render() {
     return(

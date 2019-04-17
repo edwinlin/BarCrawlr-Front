@@ -18,17 +18,94 @@ class User extends Component {
     chosenBars:[],
     search:"",
     location:"",
-    areaSearchCoord:""
+    areaSearchCoord:"",
+    event:{}
   }
 
   componentDidMount(){
+    // get my location and continuously update
     watchID = navigator.geolocation.watchPosition((position)=> {
       // console.log(position.coords.latitude, position.coords.longitude);
         this.setState({...this.state, location: [position.coords.latitude, position.coords.longitude]})
+
+        // Patch User's location coordinates in the backend
+        fetch(`http://localhost:3000/api/v1/users/${this.props.data.user.id}`, {
+          method: "PATCH",
+          headers: {
+            "content-type": "application/json",
+            "accepts": "application/json",
+            "Authorization": `Bearer ${localStorage.token}`
+          },
+          body: JSON.stringify({ user:{longitude:position.coords.longitude, latitude:position.coords.latitude} })
+        })
+          .then(resp => resp.json())
+          .then(userData => {
+            if(userData.error){
+              console.log("something wrong")
+            }else{
+              console.log("something right", userData)
+            }
+          });
     });
+
+    // fetch all bars near my location with Foursquare API
     fetch(`https://api.foursquare.com/v2/venues/search?categoryId=4bf58dd8d48988d116941735&client_id=GM5FQRETMGHS2BJKGF3PQKUQUVO4UITUFWHAXDIFEM2ITPAY&client_secret=1AIBJBHYVGW4UPHS03GG0XYUII1UANFCHAR3J4DFBKTSVRYE&near=${[40.7007099, -73.987246]}&radius=1000&v=${utc}`)
     .then(resp=>resp.json())
     .then(json=>this.setState({...this.state, bars:json.response.venues}))
+
+    // if event is associated with logged in user, set state with event
+    // otherwise create the event and set state
+    if(!this.props.data.user.event) {
+      console.log("EVENT EXISTS!", this.props.data.user)
+      fetch('http://localhost:3000/api/v1/events', {
+        method: 'POST',
+        headers: {
+          'Content-type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': `Bearer ${localStorage.token}`
+        },
+        body: JSON.stringify({event:{name:"Event", user_id: this.props.data.user.id}})
+      })
+        .then(resp => resp.json())
+        .then(event => {
+          console.log(event)
+          this.setState({
+            event: event
+          }, ()=>this.grabEventBars())
+        })
+      } else {
+        fetch(`http://localhost:3000/api/v1/users/${this.props.data.user.id}`, {
+          method: 'GET',
+          headers: {
+            'Content-type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': `Bearer ${localStorage.token}`
+          }
+        })
+          .then(resp => resp.json())
+          .then(user => {
+            console.log("USER", user);
+            console.log("user event", user.event)
+            this.setState({
+              event: user.event
+            }, ()=>this.grabEventBars())
+          })
+      }
+  }
+
+  grabEventBars=()=>{
+    // fetch event and associated bars
+    fetch(`http://localhost:3000/api/v1/events/${this.state.event.id}`, {
+        method: 'GET',
+        headers: {
+          'Content-type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': `Bearer ${localStorage.token}`
+        }
+      }).then(resp=>resp.json()).then(event=>{
+        console.log("event now", event)
+        this.setState({...this.state, chosenBars:event.bars}, ()=>console.log("set Chosen", this.state.chosenBars))
+      })
   }
 
   componentDidUpdate(){
@@ -76,14 +153,38 @@ class User extends Component {
   }
 
   handleCardClick=(info)=>{
-    // debugger
-    this.setState({chosenBars:[...this.state.chosenBars, info]}, ()=>console.log("User info", info))
+        fetch('http://localhost:3000/api/v1/bars', {
+          method: 'POST',
+          headers: {
+            'Content-type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': `Bearer ${localStorage.token}`
+          },
+          body: JSON.stringify({bar:{name:info.name, foursq_id:info.id, latitude:info.location.lat, longitude:info.location.lng, user_id: this.props.data.user.id, event_id:this.state.event.id}})
+        })
+          .then(resp => resp.json())
+          .then(bar => {
+            console.log("BAR", bar)
+            this.setState({chosenBars:[...this.state.chosenBars, bar]}
+          )
+        }
+      )
+
   }
 
   handleChosenCardClick=(info)=>{
-    // console.log(info.id)
+    // console.log("chosen", info)
     let newChosen = [...this.state.chosenBars].filter(bar=>bar.id !== info.id)
     this.setState({...this.state, chosenBars:newChosen}, ()=>console.log("User Chosen", this.state.chosenBars))
+
+      fetch(`http://localhost:3000/api/v1/bars/${info.id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': `Bearer ${localStorage.token}`
+        }
+      })
   }
 
   render(){

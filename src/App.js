@@ -17,7 +17,7 @@ state={
 
 clearState = () => {
   this.state = {user:{}}
-  console.log("cleared state", this.state)
+  // console.log("cleared state", this.state)
 }
 componentDidMount = () => {
   let token = localStorage.token;
@@ -33,7 +33,7 @@ componentDidMount = () => {
         .then(user => {
           this.setState(user, () => {
             // console.log(user.message);
-            console.log(this.state.user)
+            // console.log(this.state.user)
             if(this.state.user.id > 1){
               this.props.history.push("/authorized");
             }else{
@@ -55,7 +55,7 @@ componentDidMount = () => {
 // }
 
 signupSubmitHandler = (userInfo) => {
-  console.log(userInfo)
+  // console.log(userInfo)
   fetch("http://localhost:3000/api/v1/users", {
     method: "POST",
     headers: {
@@ -94,7 +94,7 @@ loginSubmitHandler = userInfo => {
         localStorage.setItem("token", userData.jwt);
         ((localStorage.token) && (localStorage.token !== "undefined")) ? fetch('http://localhost:3000/api/v1/current_user', {method: "GET", headers:{'content-type': 'application/json', 'accepts': 'application/json', 'Authorization': `Bearer ${localStorage.token}`}}).then(resp=>resp.json())
         .then(json=>{
-          console.log("state user", this.state);
+          // console.log("state user", this.state);
           this.state.user.id >= 1 ? this.props.history.push("/authorized") : this.props.history.push("/") }) : this.props.history.push("/")
       });
     });
@@ -109,7 +109,7 @@ loginSubmitHandler = userInfo => {
             exact path="/"
             render={() => <SliderForm loginSubmitHandler={this.loginSubmitHandler} signupSubmitHandler={this.signupSubmitHandler} />}
           />
-          <Route exact path="/authorized" render={()=><User clearState={this.clearState}/>} />
+          <Route exact path="/authorized" render={()=><User clearState={this.clearState} data={this.state} />} />
         </Switch>
 
       </div>
