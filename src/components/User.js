@@ -19,7 +19,8 @@ class User extends Component {
     search:"",
     location:"",
     areaSearchCoord:"",
-    event:{}
+    event:{},
+    allUsers:{}
   }
 
   componentDidMount(){
@@ -44,6 +45,7 @@ class User extends Component {
               console.log("something wrong")
             }else{
               console.log("something right", userData)
+              this.getAllUserLocations();
             }
           });
     });
@@ -93,6 +95,23 @@ class User extends Component {
       }
   }
 
+  getAllUserLocations=()=>{
+    fetch(`http://localhost:3000/api/v1/users`, {
+      method: "GET",
+      headers:{
+        "content-type": "application/json",
+        "accepts": "application/json",
+        "Authorization": `Bearer ${localStorage.token}`
+      }
+    }).then(resp=>resp.json()).then(users=>{
+      // console.log("users markers", users)
+      this.setState({ ...this.state, allUsers:users}, ()=>{
+        // console.log('refs', this)
+        this.refs.map.addUserMarkers(this.state.allUsers)
+      })
+    })
+  }
+
   grabEventBars=()=>{
     // fetch event and associated bars
     fetch(`http://localhost:3000/api/v1/events/${this.state.event.id}`, {
@@ -112,12 +131,8 @@ class User extends Component {
 
   }
 
-  componentWillUnmount(){
-    navigator.geolocation.clearWatch(watchID);
-  }
-
-  callFunction=(someFunc)=>{
-    removeMarkersLayer = ()=>someFunc()
+  callFunctionFromChild=(removeMarkersFunctionPassedUpFromMapContainer)=>{
+    removeMarkersLayer = ()=>removeMarkersFunctionPassedUpFromMapContainer()
   }
 
   getVenuesFoursquare=(centerCoord)=>{
@@ -134,18 +149,21 @@ class User extends Component {
       .then(resp=>resp.json())
       .then(json=>{
         removeMarkersLayer();
-        this.setState({...this.state, areaSearchCoord:[json.features[0].center[1],json.features[0].center[0]]})
-        const first = parseFloat(json.features[0].center[1])
-        const second = parseFloat(json.features[0].center[0])
-        const coord = [first, second]
-        // debugger
-        // this.getVenuesFoursquare(coord)
-        fetch(`https://api.foursquare.com/v2/venues/search?categoryId=4bf58dd8d48988d116941735&client_id=GM5FQRETMGHS2BJKGF3PQKUQUVO4UITUFWHAXDIFEM2ITPAY&client_secret=1AIBJBHYVGW4UPHS03GG0XYUII1UANFCHAR3J4DFBKTSVRYE&near=${coord}&radius=1000&v=${utc}`)
-        .then(resp=>resp.json())
-        .then(json=>this.setState({...this.state, bars:json.response.venues}))
+        if(json.features){
+          console.log("JSON features", json.features)
+          this.setState({...this.state, areaSearchCoord:[json.features[0].center[1],json.features[0].center[0]]})
+          const first = parseFloat(json.features[0].center[1])
+          const second = parseFloat(json.features[0].center[0])
+          const coord = [first, second]
+          // debugger
+          // this.getVenuesFoursquare(coord)
+          fetch(`https://api.foursquare.com/v2/venues/search?categoryId=4bf58dd8d48988d116941735&client_id=GM5FQRETMGHS2BJKGF3PQKUQUVO4UITUFWHAXDIFEM2ITPAY&client_secret=1AIBJBHYVGW4UPHS03GG0XYUII1UANFCHAR3J4DFBKTSVRYE&near=${coord}&radius=1000&v=${utc}`)
+          .then(resp=>resp.json())
+          .then(json=>this.setState({...this.state, bars:json.response.venues}))
+        }
 
       })
-      // this.callFunction(); //this was a mistake. forgot to store function
+      // this.callFunctionFromChild(); //this was a mistake. forgot to store function
       // this.refs.map.removeMarkers();
     }else{
       alert("info is blank")
@@ -194,7 +212,7 @@ class User extends Component {
           <Navbar clearState={this.props.clearState} handleCreateOrganization={this.handleCreateOrganization}/>
         </div>
         <div id="map-component">
-          <MapContainer ref='map' callFunction={this.callFunction} search={this.state.search} bars={this.state.bars} data={this.state}/>
+          <MapContainer ref='map' callFunctionFromChild={this.callFunctionFromChild} search={this.state.search} bars={this.state.bars} data={this.state}/>
         </div>
         <Grid>
           <Grid.Column width={8}>

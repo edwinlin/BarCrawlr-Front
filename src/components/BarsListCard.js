@@ -1,5 +1,5 @@
 import React from "react";
-const array = [];
+// const array = [];
 // let chosenBarsIds = [];
 
 class BarsListCard extends React.Component {

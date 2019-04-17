@@ -25,22 +25,43 @@ class MapContainer extends React.Component {
 
     this.props.bars.forEach(
       bar=>{
-        const firefoxIcon = L.icon({
+        const beerIcon = L.icon({
             iconUrl: 'http://pluspng.com/img-png/png-pub-beer-mug-alcohol-pub-drink-bar-glass-ale-720.png',
             iconSize: [38, 45], // size of the icon
         });
         // create marker object, pass custom icon as option, add to map
-        // L.marker([bar.location.lat, bar.location.lng], {icon: firefoxIcon}).addTo(mymap);
-        const marker = L.marker([bar.location.lat, bar.location.lng], {icon: firefoxIcon, title: bar.name, bar_id: bar.id}).bindPopup(bar.name).addTo(markerGroup).on('click', function(e) {
+        // L.marker([bar.location.lat, bar.location.lng], {icon: beerIcon}).addTo(mymap);
+        const marker = L.marker([bar.location.lat, bar.location.lng], {icon: beerIcon, title: bar.name, bar_id: bar.id}).bindPopup(bar.name).addTo(markerGroup).on('click', function(e) {
         // marker.bindPopup(bar.name).openPopup()
     // console.log(this);
-});
-      })
+      });
+    })
+  }
+
+  addUserMarkers=(usersData)=>{
+    console.log("usersInfoMarkers", usersData)
+
+    usersMarkerGroup = L.layerGroup().addTo(mymap);
+    if(Array.isArray(usersData)){
+      usersData.forEach(
+        user=>{
+          console.log("users Markers proxy", user)
+          const userIcon = L.icon({
+              iconUrl: 'https://dumielauxepices.net/sites/default/files/map-clipart-transparent-background-675123-8709320.svg',
+              iconSize: [38, 45], // size of the icon
+          });
+          const marker = L.marker([user.latitude, user.longitude], {icon: userIcon, title: user.name, bar_id: user.id}).bindPopup(user.name).addTo(usersMarkerGroup).on('click', function(e) {
+          });
+        }
+      )
+    }
+
+
   }
 
   componentDidMount=()=> {
     console.log(this.props)
-    this.props.callFunction(()=>this.removeMarkers())
+    this.props.callFunctionFromChild(()=>this.removeMarkers())
     // this.setState({...this.state, location:this.props.location})
     // setTimeout(()=>{console.log("boo",this.state.location)}, 8000);
 
@@ -58,7 +79,7 @@ class MapContainer extends React.Component {
 
 componentDidUpdate=(prevProps, prevState, snapshot)=>{
 
-  if(this.props.data.search !== ""){
+  // if(this.props.data.search !== ""){
 
     // console.log("data props", typeof this.props.data.areaSearchCoord[0])
 
@@ -71,7 +92,7 @@ componentDidUpdate=(prevProps, prevState, snapshot)=>{
     }
     // marker.setLatLng(this.props.data.areaSearchCoord);
   //   // marker.addTo(mymap)
-  }
+  // }
   // if(this.state.changed==0){
     // this.setState(prevState=>({changed:1}))
     if(this.props.bars.length>1){
@@ -81,6 +102,7 @@ componentDidUpdate=(prevProps, prevState, snapshot)=>{
       // console.log('bloob')
       // this.removeMarkers();
       this.addMarkers();
+      // this.addUserMarkers();
     }
   }
 

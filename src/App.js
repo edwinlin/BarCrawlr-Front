@@ -16,7 +16,7 @@ state={
 }
 
 clearState = () => {
-  this.state = {user:{}}
+  this.setState = {...this.state, user:{}}
   // console.log("cleared state", this.state)
 }
 componentDidMount = () => {
