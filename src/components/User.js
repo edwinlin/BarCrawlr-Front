@@ -127,6 +127,10 @@ class User extends Component {
       })
   }
 
+  componentWillUnmount(){
+navigator.geolocation.clearWatch(watchID);
+}
+
   componentDidUpdate(){
 
   }

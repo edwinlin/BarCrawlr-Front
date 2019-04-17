@@ -16,7 +16,7 @@ state={
 }
 
 clearState = () => {
-  this.setState = {...this.state, user:{}}
+  // this.setState = {...this.state, user:{}}
   // console.log("cleared state", this.state)
 }
 componentDidMount = () => {
@@ -70,6 +70,7 @@ signupSubmitHandler = (userInfo) => {
         // this.props.history.push("/")
         alert("username already exists")
       }else{
+        debugger
         this.setState(userData, () => {
           localStorage.setItem("token", userData.jwt);
           this.loginSubmitHandler(userInfo)
