@@ -24,7 +24,12 @@ class User extends Component {
   }
 
   componentDidMount(){
+    this.getAllMarkerLocationsAndCheckEvent()
+  }
+
+  getAllMarkerLocationsAndCheckEvent=()=>{
     // get my location and continuously update
+    // this.watchMyPositionAndUpdate();
     watchID = navigator.geolocation.watchPosition((position)=> {
       // console.log(position.coords.latitude, position.coords.longitude);
         this.setState({...this.state, location: [position.coords.latitude, position.coords.longitude]})
@@ -70,7 +75,7 @@ class User extends Component {
       })
         .then(resp => resp.json())
         .then(event => {
-          console.log(event)
+          console.log("EVENT", event)
           this.setState({
             event: event
           }, ()=>this.grabEventBars())
@@ -93,6 +98,78 @@ class User extends Component {
             }, ()=>this.grabEventBars())
           })
       }
+  }
+
+  checkEventExists=()=>{
+    if(!this.props.data.user.event) {
+      console.log("EVENT EXISTS!", this.props.data.user)
+      fetch('http://localhost:3000/api/v1/events', {
+        method: 'POST',
+        headers: {
+          'Content-type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': `Bearer ${localStorage.token}`
+        },
+        body: JSON.stringify({event:{name:"Event", user_id: this.props.data.user.id}})
+      })
+        .then(resp => resp.json())
+        .then(event => {
+          console.log("EVENT", event)
+          this.setState({
+            event: event
+          }, ()=>this.grabEventBars())
+        })
+      } else {
+        fetch(`http://localhost:3000/api/v1/users/${this.props.data.user.id}`, {
+          method: 'GET',
+          headers: {
+            'Content-type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': `Bearer ${localStorage.token}`
+          }
+        })
+          .then(resp => resp.json())
+          .then(user => {
+            console.log("USER", user);
+            console.log("user event", user.event)
+            this.setState({
+              event: user.event
+            }, ()=>this.grabEventBars())
+          })
+      }
+  }
+
+  getAllBarsNearMe=()=>{
+    fetch(`https://api.foursquare.com/v2/venues/search?categoryId=4bf58dd8d48988d116941735&client_id=GM5FQRETMGHS2BJKGF3PQKUQUVO4UITUFWHAXDIFEM2ITPAY&client_secret=1AIBJBHYVGW4UPHS03GG0XYUII1UANFCHAR3J4DFBKTSVRYE&near=${[40.7007099, -73.987246]}&radius=1000&v=${utc}`)
+    .then(resp=>resp.json())
+    .then(json=>this.setState({...this.state, bars:json.response.venues}))
+  }
+
+  watchMyPositionAndUpdate=()=>{
+    watchID = navigator.geolocation.watchPosition((position)=> {
+      // console.log(position.coords.latitude, position.coords.longitude);
+        this.setState({...this.state, location: [position.coords.latitude, position.coords.longitude]})
+
+        // Patch User's location coordinates in the backend
+        fetch(`http://localhost:3000/api/v1/users/${this.props.data.user.id}`, {
+          method: "PATCH",
+          headers: {
+            "content-type": "application/json",
+            "accepts": "application/json",
+            "Authorization": `Bearer ${localStorage.token}`
+          },
+          body: JSON.stringify({ user:{longitude:position.coords.longitude, latitude:position.coords.latitude} })
+        })
+          .then(resp => resp.json())
+          .then(userData => {
+            if(userData.error){
+              console.log("something wrong")
+            }else{
+              console.log("something right", userData)
+              this.getAllUserLocations();
+            }
+          });
+    });
   }
 
   getAllUserLocations=()=>{
