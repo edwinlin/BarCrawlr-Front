@@ -6,6 +6,7 @@ let flag = 0;
 const markerArray = [];
 let markerGroup;
 let usersMarkerGroup;
+let barcrawlMarkerGroup;
 
 class MapContainer extends React.Component {
   state = {
@@ -14,9 +15,11 @@ class MapContainer extends React.Component {
   }
 
   removeMarkers=()=>{
-    this.props.bars.forEach(bar=>
+    console.log("REMOVE MARKERS")
+    // this.props.bars.forEach(bar=>
       mymap.removeLayer(markerGroup)
-    )
+      mymap.removeLayer(usersMarkerGroup)
+    // )
   }
 
   addMarkers=()=>{
@@ -55,8 +58,19 @@ class MapContainer extends React.Component {
         }
       )
     }
+  }
 
+  addBarCrawlMarkers=()=>{
+    console.log("BAR CRAWL MARKERS")
+    barcrawlMarkerGroup = L.layerGroup().addTo(mymap);
 
+    this.props.data.chosenBars.forEach(bar=>{
+      const barCrawlIcon = L.icon({
+          iconUrl: 'http://joshuafrazier.info/images/firefox.svg',
+          iconSize: [38, 45], // size of the icon
+      });
+      const marker = L.marker([bar.latitude, bar.longitude], {icon: barCrawlIcon, title: bar.name, bar_id: bar.id}).bindPopup(bar.name).addTo(barcrawlMarkerGroup).on('click', function(e) {});
+    })
   }
 
   componentDidMount=()=> {
@@ -86,6 +100,7 @@ componentDidUpdate=(prevProps, prevState, snapshot)=>{
     if(typeof this.props.data.areaSearchCoord[0] === "number"){
       this.removeMarkers();
       this.addMarkers();
+      this.addUserMarkers();
 
       mymap.panTo([this.props.data.areaSearchCoord[0], this.props.data.areaSearchCoord[1]])
 
@@ -101,6 +116,9 @@ componentDidUpdate=(prevProps, prevState, snapshot)=>{
     if(flag < 2){
       // console.log('bloob')
       // this.removeMarkers();
+      if(prevState !== this.state){
+        console.log("diffERENT")
+      }
       this.addMarkers();
       // this.addUserMarkers();
     }

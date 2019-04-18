@@ -24,6 +24,7 @@ class User extends Component {
   }
 
   componentDidMount(){
+    console.log("THIS", this)
     // get my location and continuously update
     watchID = navigator.geolocation.watchPosition((position)=> {
       // console.log(position.coords.latitude, position.coords.longitude);
@@ -71,9 +72,11 @@ class User extends Component {
         .then(resp => resp.json())
         .then(event => {
           console.log(event)
-          // this.setState({
-          //   event: event
-          // }, ()=>this.grabEventBars())
+          this.setState({
+            event: event
+          }
+          // , ()=>this.grabEventBars()
+        )
           this.grabEventBars(event)
         })
       } else {
@@ -214,6 +217,11 @@ navigator.geolocation.clearWatch(watchID);
       })
   }
 
+  toggleBarcrawl=()=>{
+    this.refs.map.removeMarkers()
+    this.refs.map.addBarCrawlMarkers()
+  }
+
   render(){
     return(
       <div id="main-container">
@@ -231,7 +239,7 @@ navigator.geolocation.clearWatch(watchID);
           </Grid.Column>
           <Grid.Column width={8}>
             <div id="chosenBars-list-component">
-              <ChosenBarsList handleChosenCardClick={this.handleChosenCardClick} data={this.state}/>
+              <ChosenBarsList toggleBarcrawl={this.toggleBarcrawl} handleChosenCardClick={this.handleChosenCardClick} data={this.state}/>
             </div>
           </Grid.Column>
         </Grid>
