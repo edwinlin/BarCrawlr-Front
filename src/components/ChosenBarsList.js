@@ -29,7 +29,7 @@ componentDidUpdate=()=>{
         </div>
         <div id="chosen-list">
           <ul className="chosen-bars-list">
-          {Array.isArray(this.props.data.chosenBars) ? this.props.data.chosenBars.map(bar=><ChosenBarsListCard handleChosenCardClick={this.props.handleChosenCardClick} bar={bar} data={this.props.data} />) : console.log("nothing")}
+          {Array.isArray(this.props.data.chosenBars) ? this.props.data.chosenBars.map(bar=><ChosenBarsListCard handleChosenCardClick={this.props.handleChosenCardClick} bar={bar} data={this.props.data} />) : this.setState({...this.state})}
 
           </ul>
         </div>

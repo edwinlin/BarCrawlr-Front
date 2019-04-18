@@ -20,7 +20,7 @@ const SliderForm = props => {
                     <p>
                         To keep connected with us please login with your personal info
                     </p>
-                    <button onClick={() => document.getElementById('container').classList.remove('right-panel-active')} className="ghost" id="signIn">Sign In</button>
+                    <button onClick={() => document.getElementById('container').classList.remove('right-panel-active')} className="ghost" id="signIn">Log In</button>
                 </div>
                 <div className="overlay-panel overlay-right">
                     <h1>Hello, Friend!</h1>

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Suspense } from 'react';
 import { Route, Switch, withRouter } from "react-router-dom";
 
 import {connect} from 'react-redux' //need for redux
@@ -6,8 +6,9 @@ import {connect} from 'react-redux' //need for redux
 import Navbar from './components/Navbar'
 import './App.css';
 // import Container from './components/Container'
-import User from './components/User'
+// import User from './components/User'
 import SliderForm from './components/SliderForm'
+const User = React.lazy(() => import('./components/User'))
 
 class App extends Component {
 
@@ -16,12 +17,12 @@ state={
 }
 
 clearState = () => {
-  this.setState = {...this.state, user:{}}
+  // this.setState = {...this.state, user:{}}
   // console.log("cleared state", this.state)
 }
 componentDidMount = () => {
   let token = localStorage.token;
-  token && token !== "undefined" ? fetch("http://localhost:3000/api/v1/current_user", {
+  token && token !== "undefined" ? fetch("http://localhost:3000/api/v1/profile", {
         method: "GET",
         headers: {
           "content-type": "application/json",
@@ -33,8 +34,8 @@ componentDidMount = () => {
         .then(user => {
           this.setState(user, () => {
             // console.log(user.message);
-            // console.log(this.state.user)
-            if(this.state.user.id > 1){
+            console.log("TOKEN FOUND",this.state.user)
+            if(this.state.user.id){
               this.props.history.push("/authorized");
             }else{
               this.props.history.push("/")
@@ -70,6 +71,7 @@ signupSubmitHandler = (userInfo) => {
         // this.props.history.push("/")
         alert("username already exists")
       }else{
+        // debugger
         this.setState(userData, () => {
           localStorage.setItem("token", userData.jwt);
           this.loginSubmitHandler(userInfo)
@@ -95,7 +97,7 @@ loginSubmitHandler = userInfo => {
         ((localStorage.token) && (localStorage.token !== "undefined")) ? fetch('http://localhost:3000/api/v1/current_user', {method: "GET", headers:{'content-type': 'application/json', 'accepts': 'application/json', 'Authorization': `Bearer ${localStorage.token}`}}).then(resp=>resp.json())
         .then(json=>{
           // console.log("state user", this.state);
-          this.state.user.id >= 1 ? this.props.history.push("/authorized") : this.props.history.push("/") }) : this.props.history.push("/")
+          this.state.user.id ? this.props.history.push("/authorized") : this.props.history.push("/") }) : this.props.history.push("/")
       });
     });
 };
@@ -105,11 +107,15 @@ loginSubmitHandler = userInfo => {
     return (
       <div className="main">
         <Switch>
-          <Route
-            exact path="/"
-            render={() => <SliderForm loginSubmitHandler={this.loginSubmitHandler} signupSubmitHandler={this.signupSubmitHandler} />}
-          />
-          <Route exact path="/authorized" render={()=><User clearState={this.clearState} data={this.state} />} />
+            <Route
+              exact path="/"
+              render={() => <SliderForm loginSubmitHandler={this.loginSubmitHandler} signupSubmitHandler={this.signupSubmitHandler} />}
+            />
+          <Suspense fallback={<div>Loading...</div>}>
+
+            <Route exact path="/authorized" render={()=><User clearState={this.clearState} data={this.state} />} />
+          </Suspense>
+
         </Switch>
 
       </div>
