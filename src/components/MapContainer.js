@@ -18,8 +18,15 @@ class MapContainer extends React.Component {
     console.log("REMOVE MARKERS")
     // this.props.bars.forEach(bar=>
       mymap.removeLayer(markerGroup)
-      mymap.removeLayer(usersMarkerGroup)
     // )
+  }
+
+  removeUsersMarkers=()=>{
+    mymap.removeLayer(usersMarkerGroup)
+  }
+
+  removeBarCrawlMarkers=()=>{
+    mymap.removeLayer(barcrawlMarkerGroup)
   }
 
   addMarkers=()=>{
@@ -100,6 +107,7 @@ componentDidUpdate=(prevProps, prevState, snapshot)=>{
     if(typeof this.props.data.areaSearchCoord[0] === "number"){
       this.removeMarkers();
       this.addMarkers();
+      this.removeUsersMarkers();
       this.addUserMarkers();
 
       mymap.panTo([this.props.data.areaSearchCoord[0], this.props.data.areaSearchCoord[1]])
