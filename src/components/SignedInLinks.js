@@ -7,7 +7,7 @@ const SignedInLinks = (props) => {
     <li onClick={props.handleCreateOrganization}><NavLink to='/authorized'>Team</NavLink></li>
     <li onClick={() => {
       localStorage.removeItem("token");
-      props.clearState();
+      // props.clearState();
     }}><NavLink to='/'>Log Out</NavLink></li>
 
     </ul>

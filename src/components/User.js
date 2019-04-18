@@ -54,11 +54,11 @@ class User extends Component {
     fetch(`https://api.foursquare.com/v2/venues/search?categoryId=4bf58dd8d48988d116941735&client_id=GM5FQRETMGHS2BJKGF3PQKUQUVO4UITUFWHAXDIFEM2ITPAY&client_secret=1AIBJBHYVGW4UPHS03GG0XYUII1UANFCHAR3J4DFBKTSVRYE&near=${[40.7007099, -73.987246]}&radius=1000&v=${utc}`)
     .then(resp=>resp.json())
     .then(json=>this.setState({...this.state, bars:json.response.venues}))
-
+    console.log("CHECKING EVENT", this.props.data.user)
     // if event is associated with logged in user, set state with event
     // otherwise create the event and set state
     if(!this.props.data.user.event) {
-      console.log("EVENT EXISTS!", this.props.data.user)
+      console.log("NO EVENT EXISTS!", this.props.data.user)
       fetch('http://localhost:3000/api/v1/events', {
         method: 'POST',
         headers: {
@@ -71,9 +71,10 @@ class User extends Component {
         .then(resp => resp.json())
         .then(event => {
           console.log(event)
-          this.setState({
-            event: event
-          }, ()=>this.grabEventBars())
+          // this.setState({
+          //   event: event
+          // }, ()=>this.grabEventBars())
+          this.grabEventBars(event)
         })
       } else {
         fetch(`http://localhost:3000/api/v1/users/${this.props.data.user.id}`, {
@@ -86,11 +87,15 @@ class User extends Component {
         })
           .then(resp => resp.json())
           .then(user => {
+            // debugger
             console.log("USER", user);
             console.log("user event", user.event)
             this.setState({
               event: user.event
-            }, ()=>this.grabEventBars())
+            }
+            // , ()=>this.grabEventBars()
+          )
+            this.grabEventBars(user.event)
           })
       }
   }
@@ -112,9 +117,9 @@ class User extends Component {
     })
   }
 
-  grabEventBars=()=>{
+  grabEventBars=(userEvent)=>{
     // fetch event and associated bars
-    fetch(`http://localhost:3000/api/v1/events/${this.state.event.id}`, {
+    fetch(`http://localhost:3000/api/v1/events/${userEvent.id}`, {
         method: 'GET',
         headers: {
           'Content-type': 'application/json',
