@@ -10,6 +10,7 @@ import { Grid } from 'semantic-ui-react'
 let removeMarkersLayer = ""
 var utc = new Date().toJSON().slice(0,10).replace(/-/g,'');
 let watchID = null;
+let flag = false;
 
 class User extends Component {
 
@@ -20,10 +21,11 @@ class User extends Component {
     location:"",
     areaSearchCoord:"",
     event:{},
-    allUsers:{}
+    allUsers:{},
   }
 
   componentDidMount(){
+    console.log("THIS", this)
     // get my location and continuously update
     watchID = navigator.geolocation.watchPosition((position)=> {
       // console.log(position.coords.latitude, position.coords.longitude);
@@ -71,9 +73,11 @@ class User extends Component {
         .then(resp => resp.json())
         .then(event => {
           console.log(event)
-          // this.setState({
-          //   event: event
-          // }, ()=>this.grabEventBars())
+          this.setState({
+            event: event
+          }
+          // , ()=>this.grabEventBars()
+        )
           this.grabEventBars(event)
         })
       } else {
@@ -158,6 +162,8 @@ navigator.geolocation.clearWatch(watchID);
       .then(resp=>resp.json())
       .then(json=>{
         removeMarkersLayer();
+        flag = false;
+        this.refs.map.removeBarCrawlMarkers();
         if(json.features){
           console.log("JSON features", json.features)
           this.setState({...this.state, areaSearchCoord:[json.features[0].center[1],json.features[0].center[0]]})
@@ -214,6 +220,18 @@ navigator.geolocation.clearWatch(watchID);
       })
   }
 
+  toggleBarcrawl=()=>{
+    if(flag == false){
+      flag = true
+      this.refs.map.removeMarkers()
+      this.refs.map.addBarCrawlMarkers()
+    }else{
+      flag = false
+      this.refs.map.removeBarCrawlMarkers()
+      this.refs.map.addMarkers()
+    }
+  }
+
   render(){
     return(
       <div id="main-container">
@@ -231,7 +249,7 @@ navigator.geolocation.clearWatch(watchID);
           </Grid.Column>
           <Grid.Column width={8}>
             <div id="chosenBars-list-component">
-              <ChosenBarsList handleChosenCardClick={this.handleChosenCardClick} data={this.state}/>
+              <ChosenBarsList toggleBarcrawl={this.toggleBarcrawl} handleChosenCardClick={this.handleChosenCardClick} data={this.state}/>
             </div>
           </Grid.Column>
         </Grid>

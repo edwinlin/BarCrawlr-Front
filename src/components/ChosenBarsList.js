@@ -25,7 +25,7 @@ componentDidUpdate=()=>{
     return(
       <div>
         <div id="chosen-title">
-        <h3>Bar Crawl List</h3>
+        <h3 onClick={()=>this.props.toggleBarcrawl()}>Bar Crawl List</h3>
         </div>
         <div id="chosen-list">
           <ul className="chosen-bars-list">
